@@ -44,7 +44,7 @@
   systemctl disable firewalld.service        #禁止firewall开机启动
   
   #清除安装的包文件
-  yum clear all
+  yum clean all
   #测试yum是否起作用了
   yum makecache  #如果这里执行失败，看看虚拟机是不是能ping通baidu的域名
   #安装wget
