@@ -3,9 +3,11 @@
 ## 基本配置
 
 - 设置内存和硬盘
+
 - 配置虚拟机网络 连接方式选择 桥接网卡
 
 - 配置虚拟机网路
+
 - 编辑网卡
 
   ```bash
@@ -36,6 +38,7 @@
   重启网卡
   service network restart
   配置host文件
+  vi /etc/hosts
   固化ip 和虚拟机名字做映射
   192.168.*.* eshop-cache01
   关闭宿主机防火墙
@@ -84,6 +87,32 @@
 
 - 最后按照以上步骤，再配置三台一模一样的虚拟机
 
+- 在每台机器hosts文件里，配置好所有的机器的ip和hosts映射关系
+
+- 每台机器 配置ssh免密互相通信
+
+  ```bash
+  ssh-keygen -t rsa
+  cd /root/.ssh
+  cp id_rsa.pub authorized_keys
+  #测试
+  ssh eshop-cache01 输入yes
+  #接下来 ssh连接就不需要密码了
+  ssh eshop-cache01 连接成功
+  #退出 ssh连接
+  logout
+  #配置和其它机器的免密登录
+  #例如 ssh-copy-id -i eshop-cache02, 将eshop-cache01 的公匙拷贝到eshop-cache02的authorized_keys 中
+  # 在234上执行,把自己的id_rsa.pub 拷贝到1的authorized_keys中 
+  ssh-copy-id -i eshop-cache01
+  #上面的是把1的公匙分别拷贝到2，3，4接下来，把2,3,4的公匙分别拷贝到1 此时1有四个公匙 1234 再把一的id_rsa.pub 拷贝到其它三台机器上
+  scp authorized_keys eshop-cache02:/root/.ssh
+  scp authorized_keys eshop-cache03:/root/.ssh
+  scp authorized_keys eshop-cache04:/root/.ssh
+  ```
+
+  
+
 ## 问题处理
 
 ##### 关于无法创建虚拟电脑的解决办法
@@ -114,3 +143,7 @@ nameserver 114.114.114.114
 ##### make && make test && make install 
 
 make test 命令报错，就单独执行make  install
+
+##### 为什么要装perl
+
+java+nginx+lua 需要perl
