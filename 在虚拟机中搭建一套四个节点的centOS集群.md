@@ -111,7 +111,72 @@
   scp authorized_keys eshop-cache04:/root/.ssh
   ```
 
-  
+
+- 安装Redis
+
+     ```bash
+     #解压redis
+     tar -zxvf redis-3.2.8.tar.gz
+     #安装tcl
+     wget http://downloads.sourceforge.net/tcl/tcl8.6.1-src.tar.gz
+     #configure
+      cd tcl8.6.1/
+      cd unix/
+     #执行命令
+     ./configure
+     make && make install
+     # 进入redis文件夹
+     cd ..
+     cd ..
+     cd redis.3.2.8
+     #执行命令
+     make test&& make install
+     ```
+
+- Redis配置的注意事项
+
+```bash
+生产环境中把Redis当做一个daemon进程去启动，每次系统启动时，redis进程要一起启动
+redis/utils 目录下有一个redis_init_script脚本，把这个脚本拷贝到/etc/init.d目录下重命名为redis_6379
+#创建目录/etc/redis 用来放redis配置文件
+mkdir redis
+#将/etc/redis下的redis.conf文件重命名为6379.conf
+cd /etc/redis
+mv redis.conf 6379.conf
+#创建目录/var/redis/6379 用来放redis持久化文件
+cd /var
+mkdir redis
+cd redis
+mkdir 6379
+#把redis配置文件放到/etc/redis下面去
+#修改 6379.conf文件
+vi redis.conf
+#修改的地方
+daemonize true #用后台守护进程的方式启动
+pidfile /var/run/redis_6379.pid #redis pid 文件的位置
+port 6379 #redis监听的端口号
+dir /var/redis/6379 #设置持久化文件的存储位置
+#启动redis
+cd /etc/init.d
+chmod 777 redis_6379 #chmod 777 将读 写 执行的权限赋给所有用户 只需要执行一次
+./redis_6379 start
+#确认redis进程是否启动
+ps -ef|grep redis
+#在redis_6379 !bin/sh下添加两行注释 设置redis开机启动
+# chkconfig: 2345 90 10
+# description: Redis is a persistent key-value database
+#执行下面这个命令 设置开机自动启动
+chkconfig redis_6379 on
+#redis-cli 命令
+redis-cli SHUTDOWN #停止redis服务
+redis-cli -h 127.0.0.1 -p 6379 SHUTDOWN #指定要关闭哪台机器上的redis
+redis-cli PING #测试是否能够给ping通
+#启动redis
+cd /etc/init.d
+./redis_6379 start
+```
+
+
 
 ## 问题处理
 
